@@ -21,16 +21,14 @@ public final class Request {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Request request = (Request) o;
-        return Objects.equals(method, request.method) &&
-                Objects.equals(uri, request.uri);
+
+        return this == o ? true : o == null || getClass() != o.getClass() ? false :
+                Objects.equals(method, ((Request) o).method) &&
+                        Objects.equals(uri, ((Request) o).uri);
     }
 
     @Override
     public int hashCode() {
-
         return Objects.hash(method, uri);
     }
 }

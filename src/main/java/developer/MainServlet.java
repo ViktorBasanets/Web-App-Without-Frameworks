@@ -1,48 +1,54 @@
-package developer.servlets;
+package developer;
 
-import developer.Request;
 import developer.controllers.Controller;
-import developer.controllers.GetAllCategoriesController;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
 public class MainServlet extends HttpServlet {
+
     private static Map<Request, Controller> controllerMap = new HashMap<>();
 
     @Override
-    public void init() throws ServletException {
-        controllerMap.put(new Request("GET", "/servlet/categories"), new GetAllCategoriesController());
+    public void init() {
+
+        controllerMap.put(new Request("GET", "/servlet/categories"), Factory.getAllCategoriesController());
+        controllerMap.put(new Request("GET", "/servlet/category"), Factory.getCategoryByIdController());
+        controllerMap.put(new Request("POST", "/servlet/signup"), Factory.getSignUpController());
+        controllerMap.put(new Request("GET", "/servlet/signup"), processView().apply("signup"));
+        controllerMap.put(new Request("POST", "/servlet/login"), Factory.getLoginController());
+        controllerMap.put(new Request("GET", "/servlet/login"), processView().apply("login"));
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
 
-        processRequest(request, response);
+        /*PrintWriter writer = resp.getWriter();
+        writer.println("<html>");
+        writer.println("<head>");
+        writer.println("</head>");
+        writer.println("<body>");
+        writer.println("<h1>Hello from Servlet!</h1>");ё
+        writer.println("</body>");
+        writer.println("</html>");*/
+
+        processRequest(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        processRequest(request, response);
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        processRequest(req, resp);
     }
 
-    private void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    private void processRequest(HttpServletRequest req, HttpServletResponse resp) {
 
-        Request request1 = new Request(request.getMethod(), request.getRequestURI());
-        controllerMap.getOrDefault(request1, this::process404)
-                .process(request, response);
-
+        Request request = new Request(req.getMethod(), req.getRequestURI());
+        controllerMap.getOrDefault(request, processView().apply("404"))
+                .process(req, resp);
 
         /*
         if(request.getMethod().equals("GET")) {
@@ -65,16 +71,31 @@ public class MainServlet extends HttpServlet {
         */
     }
 
-    private void process404(HttpServletRequest request, HttpServletResponse response) {
+    private Function<String, Controller> processView() {
 
+        return x -> (req, resp) -> {
+            try {
+                req.getRequestDispatcher(String.format("/WEB-INF/views/%s.jsp", x)).forward(req, resp);
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        };
+
+        /*return x -> {
+            try {
+                request.getRequestDispatcher(String.format("/WEB-INF/%s/404.jsp", x));
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        };*/
+    }
+
+    /*private void processSignUpVies(HttpServletRequest req, HttpServletResponse res) {
         try {
-            request.getRequestDispatcher("/WEB-INF/views/404.jsp");
+            req.getRequestDispatcher("/WEB-INF/views/signup/404.jsp");
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
-        } finally {
-
         }
-
     }
 
     private void processLogin(HttpServletRequest request, HttpServletResponse response)
@@ -96,5 +117,5 @@ public class MainServlet extends HttpServlet {
                 .reduce("params", (v1, v2) -> v1 + " " + v2);
         request.setAttribute("parameters", resp);
         request.getRequestDispatcher("/WEB-INF/views/params.jsp").forward(request, response);
-    }
+    }*/
 }

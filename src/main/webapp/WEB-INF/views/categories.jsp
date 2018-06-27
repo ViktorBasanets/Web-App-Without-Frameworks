@@ -14,7 +14,11 @@
 </head>
 <body>
     <c:forEach var="c" items="${categories}">
-        <h1><a href="<c:url value="/servlet/category?c_id=${c.id}"/>"></a></h1>
+        <h1>
+            <a href=" <c:out value="/servlet/category?c_id=${c.id}"/> ">
+                <c:out value="${c.categoryName}"/>
+            </a>
+        </h1>
     </c:forEach>
 </body>
 </html>

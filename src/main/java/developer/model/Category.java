@@ -7,24 +7,23 @@ public class Category {
     private Long id;
     private String categoryName;
     private String description;
-    private List<Product> products;
+    private List<Product> productList;
 
-    public Category() {
-    }
+    public Category() {}
 
-    public Category(String categoryName, String description, List<Product> products) {
-
-        this.categoryName = categoryName;
-        this.description = description;
-        this.products = products;
-    }
-
-    public Category(Long id, String categoryName, String description, List<Product> products) {
+    public Category(Long id, String categoryName, String description, List<Product> productList) {
 
         this.id = id;
         this.categoryName = categoryName;
         this.description = description;
-        this.products = products;
+        this.productList = productList;
+    }
+
+    public Category(String categoryName, String description, List<Product> productList) {
+
+        this.categoryName = categoryName;
+        this.description = description;
+        this.productList = productList;
     }
 
     public Long getId() {
@@ -51,11 +50,11 @@ public class Category {
         this.description = description;
     }
 
-    public List<Product> getProducts() {
-        return products;
+    public List<Product> getProductList() {
+        return productList;
     }
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public void setProductList(List<Product> productList) {
+        this.productList = productList;
     }
 }
